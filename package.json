@@ -17,8 +17,12 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "vsEdu.refresh",
+				"title": "Refresh",
+				"icon": {
+					"light": "media/light/refresh.svg",
+					"dark": "media/dark/refresh.svg"
+				}
 			}
 		],
 		"viewsContainers": {
@@ -35,6 +39,15 @@
 				{
 					"id": "eduTests",
 					"name": "Tests"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "vsEdu.refresh",
+					"when": "view == eduTests",
+					"group": "navigation"
 				}
 			]
 		}

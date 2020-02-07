@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
 
-import {treeDataProvider} from './tree-data-provider';
+import {TestDataProvider} from './tree-data-provider';
 
 export function activate(context: vscode.ExtensionContext) {
-	vscode.window.registerTreeDataProvider("eduTests", treeDataProvider);
+	const testDataProvider = new TestDataProvider();
+	vscode.window.registerTreeDataProvider("eduTests", testDataProvider);
+	vscode.commands.registerCommand("vsEdu.refresh", () => testDataProvider.refresh());
 }
