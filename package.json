@@ -19,7 +19,24 @@
 				"command": "extension.helloWorld",
 				"title": "Hello World"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "vs-edu",
+					"title": "VS Edu",
+					"icon": "media/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"vs-edu": [
+				{
+					"id": "eduTests",
+					"name": "Tests"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
