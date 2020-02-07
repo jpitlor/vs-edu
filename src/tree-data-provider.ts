@@ -49,11 +49,20 @@ export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 		}
 	}
 	
-	getTreeItem(element: Test): vscode.TreeItem {
-		const collapsibleState = this.getChildren(element).length > 0 
-			? vscode.TreeItemCollapsibleState.Collapsed 
-			: vscode.TreeItemCollapsibleState.None;
-		return new vscode.TreeItem(element.testName || element.levelName, collapsibleState);
+	getTreeItem(element: Test): TestTreeItem {
+		const isLeaf = this.getChildren(element).length === 0;
+
+		const collapsibleState = isLeaf 
+			? vscode.TreeItemCollapsibleState.None 
+			: vscode.TreeItemCollapsibleState.Collapsed;
+		const command = isLeaf
+			? {
+				command: "vsEdu.openTest",
+				title: "",
+				arguments: [element.levelNumber, element.testNumber]
+			}
+			: undefined;
+		return new TestTreeItem(element.testName || element.levelName, collapsibleState, command);
 	}
 	
 	getParent(element: Test): Test {
@@ -62,4 +71,27 @@ export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 			levelNumber: element.levelNumber,
 		};
 	}
+}
+
+export class TestTreeItem extends vscode.TreeItem {
+	constructor(
+		public readonly label: string,
+		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+		public readonly command?: vscode.Command
+	) {
+		super(label, collapsibleState);
+	}
+
+	get tooltip(): string {
+		return this.label;
+	}
+
+	get description(): string {
+		return this.label;
+	}
+
+	iconPath = {
+		light: path.join(__filename, '..', '..', 'resources', 'light', 'edit.svg'),
+		dark: path.join(__filename, '..', '..', 'resources', 'dark', 'edit.svg')
+	};
 }
