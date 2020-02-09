@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import * as marked from "marked";
 import { Test } from "./extension";
 
 export class TestDescriptionPanel {
@@ -36,7 +37,8 @@ export class TestDescriptionPanel {
 	}
 
 	public static async createOrShow(extensionPath: string, test: Test) {
-		const courseFolder: string = vscode.workspace.getConfiguration("vsEdu").get("courses") || "courses";
+		const courseFolder: string =
+			vscode.workspace.getConfiguration("vsEdu").get("courses") || "courses";
 		const workspaces = vscode.workspace.workspaceFolders;
 
 		if (TestDescriptionPanel.currentPanel) {
@@ -53,19 +55,31 @@ export class TestDescriptionPanel {
 		}
 
 		const { testName, testNumber, levelName, levelNumber, filePath } = test;
-		const newFile = path.join(workspaces[0].uri.fsPath, courseFolder, `${levelNumber} ${levelName}`, `${testNumber} ${testName}`, 'index.js');
+		const newFile = path.join(
+			workspaces[0].uri.fsPath,
+			courseFolder,
+			`${levelNumber} ${levelName}`,
+			`${testNumber} ${testName}`,
+			"index.js"
+		);
 		const textDocument = await vscode.workspace.openTextDocument(
-			filePath || vscode.Uri.parse(`file:${newFile.replace(/\/$/, '')}`)
+			filePath || vscode.Uri.parse(`file:${newFile.replace(/\/$/, "")}`)
 		);
 
-		await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.Active);
+		await vscode.window.showTextDocument(
+			textDocument,
+			vscode.ViewColumn.Active
+		);
 		const panel = vscode.window.createWebviewPanel(
 			TestDescriptionPanel.viewType,
 			testName || levelName,
 			vscode.ViewColumn.Beside,
 			{
 				enableScripts: true,
-				localResourceRoots: vscode.workspace.workspaceFolders?.map(f => f.uri)
+				localResourceRoots: [
+					...(vscode.workspace.workspaceFolders?.map(f => f.uri) || []),
+					vscode.Uri.file(path.join(extensionPath, "media", "webview"))
+				]
 			}
 		);
 
@@ -89,16 +103,50 @@ export class TestDescriptionPanel {
 		}
 	}
 
-	private _update(test: Test) {
+	private async _update(test: Test) {
+		const { testName, testNumber, levelName, levelNumber } = test;
+		const courseFolder: string =
+			vscode.workspace.getConfiguration("vsEdu").get("courses") || "courses";
+		const workspaces = vscode.workspace.workspaceFolders;
+		if (!workspaces) {
+			return;
+		}
+
 		const webview = this._panel.webview;
 		this._panel.title = test.testName || test.levelName;
 
 		const scriptPathOnDisk = vscode.Uri.file(
-			path.join(this._extensionPath, "media", "main.js")
+			path.join(this._extensionPath, "media", "webview", "main.js")
+		);
+		const stylesPathOnDisk = vscode.Uri.file(
+			path.join(this._extensionPath, "media", "webview", "main.css")
 		);
 		const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
+		const stylesUri = webview.asWebviewUri(stylesPathOnDisk);
+		const readme = marked(
+			(
+				await vscode.workspace.fs.readFile(
+					vscode.Uri.parse(
+						"file:" +
+							path.join(
+								workspaces[0].uri.fsPath,
+								courseFolder,
+								`${levelNumber} ${levelName}`,
+								`${testNumber} ${testName}`,
+								"README.md"
+							)
+					)
+				)
+			).toString()
+		);
+
 		const nonce = getNonce();
-		this._panel.webview.html = `
+		const contentSecurityPolicy = `
+            default-src 'none'; 
+            img-src ${webview.cspSource} https:;
+            script-src 'nonce-${nonce}';
+            style-src 'nonce-${nonce}'`;
+		this._panel.webview.html = /* html */ `
             <!DOCTYPE html>
             <html lang="en">
                 <head>
@@ -108,13 +156,17 @@ export class TestDescriptionPanel {
                     Use a content security policy to only allow loading images from https or from our extension directory,
                     and only allow scripts that have a specific nonce.
                     -->
-                    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+                    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}">
 
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Cat Coding</title>
+                    <title>${test.testName || test.levelName}</title>
+                    <link href="${stylesUri}" nonce="${nonce}" rel="stylesheet" type="text/css" />
                 </head>
                 <body>
-                    <h1>Hello, world!</h1>
+                    ${readme}
+                    <div class="run-button-container">
+                        <button>Run ${test.testName || test.levelName}</button>
+                    </div>
                     <script nonce="${nonce}" src="${scriptUri}"></script>
                 </body>
             </html>

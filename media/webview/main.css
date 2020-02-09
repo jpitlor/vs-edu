@@ -1,0 +1,16 @@
+body {
+	font-size: 16px;
+}
+
+.run-button-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	width: 100%;
+}
+
+.run-button-container button {
+	padding: 1rem 2rem;
+	border-radius: 10px;
+}
