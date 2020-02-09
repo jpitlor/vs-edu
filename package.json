@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld",
+		"onCommand:vsEdu.openTest",
+		"onCommand:vsEdu.refresh",
 		"onView:eduTests"
 	],
 	"main": "./out/extension.js",
@@ -23,6 +24,10 @@
 					"light": "media/light/refresh.svg",
 					"dark": "media/dark/refresh.svg"
 				}
+			},
+			{
+				"command": "vsEdu.openTest",
+				"title": "Show Test"
 			}
 		],
 		"viewsContainers": {
@@ -50,6 +55,21 @@
 					"group": "navigation"
 				}
 			]
+		},
+		"configuration": {
+			"title": "VS Edu",
+			"properties": {
+				"vsEdu.testPath": {
+					"type": "string",
+					"default": "tests",
+					"description": "Path of the tests used for grading"
+				},
+				"vsEdu.coursePath": {
+					"type": "string",
+					"default": "courses",
+					"description": "Path of the courses to be completed"
+				}
+			}
 		}
 	},
 	"scripts": {

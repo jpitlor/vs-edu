@@ -1,129 +1,133 @@
-import * as vscode from 'vscode';
-import * as path from 'path';
+import * as vscode from "vscode";
+import * as path from "path";
+import { Test } from "./extension";
 
 export class TestDescriptionPanel {
-    constructor(public readonly context: vscode.ExtensionContext) {
+	public static readonly viewType = "eduTest";
+	public static currentPanel: TestDescriptionPanel | undefined;
 
-    }
+	private readonly _textDocument: vscode.TextDocument;
+	private readonly _panel: vscode.WebviewPanel;
+	private readonly _extensionPath: string;
+	private _disposables: vscode.Disposable[] = [];
 
-    public static currentPanel: TestDescriptionPanel | undefined;
+	constructor(
+		panel: vscode.WebviewPanel,
+		textDocument: vscode.TextDocument,
+		extensionPath: string,
+		test: Test
+	) {
+		this._panel = panel;
+		this._textDocument = textDocument;
+		this._extensionPath = extensionPath;
 
-    public static readonly viewType = 'catCoding';
+		this._update(test);
+		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+		this._panel.onDidChangeViewState(
+			() => (this._panel.visible ? this._update(test) : undefined),
+			null,
+			this._disposables
+		);
+		this._panel.webview.onDidReceiveMessage(
+			() => vscode.commands.executeCommand("vsEdu.runTest", test),
+			null,
+			this._disposables
+		);
+	}
 
-    private readonly _panel: vscode.WebviewPanel;
-    private readonly _extensionPath: string;
-    private _disposables: vscode.Disposable[] = [];
+	public static async createOrShow(extensionPath: string, test: Test) {
+		const courseFolder: string = vscode.workspace.getConfiguration("vsEdu").get("courses") || "courses";
+		const workspaces = vscode.workspace.workspaceFolders;
 
-    public static createOrShow(extensionPath: string) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.viewColumn
-            : undefined;
+		if (TestDescriptionPanel.currentPanel) {
+			vscode.window.showTextDocument(
+				TestDescriptionPanel.currentPanel._textDocument,
+				vscode.ViewColumn.Active
+			);
+			TestDescriptionPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
+			return;
+		}
 
-        // If we already have a panel, show it.
-        if (TestDescriptionPanel.currentPanel) {
-            TestDescriptionPanel.currentPanel._panel.reveal(column);
-            return;
-        }
+		if (!workspaces) {
+			return;
+		}
 
-        // Otherwise, create a new panel.
-        const panel = vscode.window.createWebviewPanel(
-            TestDescriptionPanel.viewType,
-            'Cat Coding',
-            column || vscode.ViewColumn.One,
-            {
-                enableScripts: true,
-                localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'media'))]
-            }
-        );
+		const { testName, testNumber, levelName, levelNumber, filePath } = test;
+		const newFile = path.join(workspaces[0].uri.fsPath, courseFolder, `${levelNumber} ${levelName}`, `${testNumber} ${testName}`, 'index.js');
+		const textDocument = await vscode.workspace.openTextDocument(
+			filePath || vscode.Uri.parse(`file:${newFile.replace(/\/$/, '')}`)
+		);
 
-        TestDescriptionPanel.currentPanel = new TestDescriptionPanel(panel, extensionPath);
-    }
+		await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.Active);
+		const panel = vscode.window.createWebviewPanel(
+			TestDescriptionPanel.viewType,
+			testName || levelName,
+			vscode.ViewColumn.Beside,
+			{
+				enableScripts: true,
+				localResourceRoots: vscode.workspace.workspaceFolders?.map(f => f.uri)
+			}
+		);
 
-    public static revive(panel: vscode.WebviewPanel, extensionPath: string) {
-        TestDescriptionPanel.currentPanel = new TestDescriptionPanel(panel, extensionPath);
-    }
+		TestDescriptionPanel.currentPanel = new TestDescriptionPanel(
+			panel,
+			textDocument,
+			extensionPath,
+			test
+		);
+	}
 
-    private constructor(panel: vscode.WebviewPanel, extensionPath: string) {
-        
-    }
+	public dispose() {
+		TestDescriptionPanel.currentPanel = undefined;
 
-    public doRefactor() {
-        // Send a message to the webview webview.
-        // You can send any JSON serializable data.
-        this._panel.webview.postMessage({ command: 'refactor' });
-    }
+		this._panel.dispose();
+		while (this._disposables.length) {
+			const x = this._disposables.pop();
+			if (x) {
+				x.dispose();
+			}
+		}
+	}
 
-    public dispose() {
-        TestDescriptionPanel.currentPanel = undefined;
+	private _update(test: Test) {
+		const webview = this._panel.webview;
+		this._panel.title = test.testName || test.levelName;
 
-        // Clean up our resources
-        this._panel.dispose();
-
-        while (this._disposables.length) {
-            const x = this._disposables.pop();
-            if (x) {
-                x.dispose();
-            }
-        }
-    }
-
-    private _update() {
-        const webview = this._panel.webview;
-
-        // Vary the webview's content based on where it is located in the editor.
-        switch (this._panel.viewColumn) {
-            case vscode.ViewColumn.Two:
-                this._updateForCat(webview, 'Compiling Cat');
-                return;
-
-            case vscode.ViewColumn.Three:
-                this._updateForCat(webview, 'Testing Cat');
-                return;
-
-            case vscode.ViewColumn.One:
-            default:
-                this._updateForCat(webview, 'Coding Cat');
-                return;
-        }
-    }
-
-    private _updateForCat(webview: vscode.Webview, catName: keyof typeof cats) {
-        this._panel.title = catName;
-        this._panel.webview.html = this._getHtmlForWebview(webview, cats[catName]);
-    }
-
-    private _getHtmlForWebview(webview: vscode.Webview, catGifPath: string) {
-        // Local path to main script run in the webview
-        const scriptPathOnDisk = vscode.Uri.file(
-            path.join(this._extensionPath, 'media', 'main.js')
-        );
-
-        // And the uri we use to load this script in the webview
-        const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
-
-        // Use a nonce to whitelist which scripts can be run
-        const nonce = getNonce();
-
-        return `<!DOCTYPE html>
+		const scriptPathOnDisk = vscode.Uri.file(
+			path.join(this._extensionPath, "media", "main.js")
+		);
+		const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
+		const nonce = getNonce();
+		this._panel.webview.html = `
+            <!DOCTYPE html>
             <html lang="en">
-            <head>
-                <meta charset="UTF-8">
+                <head>
+                    <meta charset="UTF-8">
 
-                <!--
-                Use a content security policy to only allow loading images from https or from our extension directory,
-                and only allow scripts that have a specific nonce.
-                -->
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+                    <!--
+                    Use a content security policy to only allow loading images from https or from our extension directory,
+                    and only allow scripts that have a specific nonce.
+                    -->
+                    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
 
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Cat Coding</title>
-            </head>
-            <body>
-                <img src="${catGifPath}" width="300" />
-                <h1 id="lines-of-code-counter">0</h1>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Cat Coding</title>
+                </head>
+                <body>
+                    <h1>Hello, world!</h1>
+                    <script nonce="${nonce}" src="${scriptUri}"></script>
+                </body>
+            </html>
+        `;
+	}
+}
 
-                <script nonce="${nonce}" src="${scriptUri}"></script>
-            </body>
-            </html>`;
-    }
+function getNonce() {
+	let text = "";
+	const possible =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for (let i = 0; i < 32; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	}
+	return text;
 }

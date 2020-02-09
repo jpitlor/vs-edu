@@ -1,13 +1,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-
-interface Test {
-	levelName: string;
-	levelNumber: string;
-	testName?: string;
-	testNumber?: string;
-}
+import { Test } from "./extension";
 
 export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 	private _onDidChangeTreeData: vscode.EventEmitter<Test | undefined> = new vscode.EventEmitter<Test | undefined>();
@@ -17,40 +11,60 @@ export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 		this._onDidChangeTreeData.fire();
 	}
 
-	getChildren(element?: Test): Test[] {
-		// TODO: Make paths configurable in options
-		const courseFolder = 'courses';
+	async getChildren(element?: Test): Promise<Test[]> {
+		const courseFolder: string = vscode.workspace.getConfiguration('vsEdu').get('courses') || 'courses';
 		const workspaceFolders = vscode.workspace.workspaceFolders;
+
+		// If the user hasn't opened a folder, return nothing
 		if (!workspaceFolders) {
 			return [];
 		}
 	
+		// If element is root, return the levels
 		if (element === null || element === undefined) {
 			return fs
 				.readdirSync(path.join(workspaceFolders[0].uri.fsPath, courseFolder))
 				.map(c => /(\d+) (.+)/.exec(c))
 				.filter(<T>(x: T | null): x is T => x !== null)
 				.map(([, levelNumber, levelName]) => ({levelName, levelNumber}));
-		} else {
-			if (element.testName) {
-				return [];
-			}
-			
-			return fs
-				.readdirSync(path.join(workspaceFolders[0].uri.fsPath, courseFolder, `${element.levelNumber} ${element.levelName}`))
-				.map(c => /(\d+) (.+)/.exec(c))
-				.filter(<T>(x: T | null): x is T => x !== null)
-				.map(([, testNumber, testName]) => ({
-					levelName: element.levelName,
-					levelNumber: element.levelNumber, 
-					testName, 
-					testNumber,
-				}));
+		} 
+
+		// If element is a test, return the files if there is more than 1.
+		if (element.testName) {
+			const files = await vscode.workspace.findFiles(
+				`${courseFolder}/${element.levelNumber} ${element.levelName}/${element.testNumber} ${element.testName}`,
+				'**/README.md'
+			);
+				
+			return files.length > 2 
+				? files.map(filePath => ({...element, filePath}))
+				: [];
 		}
+		
+		// If element is a level, return the tests
+		return fs
+			.readdirSync(path.join(workspaceFolders[0].uri.fsPath, courseFolder, `${element.levelNumber} ${element.levelName}`))
+			.map(c => /(\d+) (.+)/.exec(c))
+			.filter(<T>(x: T | null): x is T => x !== null)
+			.map(([, testNumber, testName]) => ({
+				levelName: element.levelName,
+				levelNumber: element.levelNumber, 
+				testName, 
+				testNumber,
+			}));
 	}
 	
-	getTreeItem(element: Test): TestTreeItem {
-		const isLeaf = this.getChildren(element).length === 0;
+	async getTreeItem(element: Test): Promise<TestTreeItem> {
+		const courseFolder: string = vscode.workspace.getConfiguration('vsEdu').get('courses') || 'courses';
+		const isLeaf = (await this.getChildren(element)).length === 0;
+
+		if (!element.filePath) {
+			// If there's only 1 file, it still needs added to the element
+			element.filePath = (await vscode.workspace.findFiles(
+				`${courseFolder}/${element.levelNumber} ${element.levelName}/${element.testNumber} ${element.testName}`,
+				'**/README.md'
+			))[0];
+		}
 
 		const collapsibleState = isLeaf 
 			? vscode.TreeItemCollapsibleState.None 
@@ -59,17 +73,28 @@ export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 			? {
 				command: "vsEdu.openTest",
 				title: "",
-				arguments: [element.levelNumber, element.testNumber]
+				arguments: [element]
 			}
 			: undefined;
 		return new TestTreeItem(element.testName || element.levelName, collapsibleState, command);
 	}
 	
-	getParent(element: Test): Test {
-		return {
-			levelName: element.levelName,
-			levelNumber: element.levelNumber,
-		};
+	getParent(element: Test): Test | null {
+		if (element.filePath) {
+			return {
+				levelName: element.levelName,
+				levelNumber: element.levelNumber,
+				testName: element.testName,
+				testNumber: element.testNumber,
+			};
+		} else if (element.testNumber) {
+			return {
+				levelName: element.levelName,
+				levelNumber: element.levelNumber,
+			};
+		} else {
+			return null;
+		}
 	}
 }
 
@@ -81,17 +106,4 @@ export class TestTreeItem extends vscode.TreeItem {
 	) {
 		super(label, collapsibleState);
 	}
-
-	get tooltip(): string {
-		return this.label;
-	}
-
-	get description(): string {
-		return this.label;
-	}
-
-	iconPath = {
-		light: path.join(__filename, '..', '..', 'resources', 'light', 'edit.svg'),
-		dark: path.join(__filename, '..', '..', 'resources', 'dark', 'edit.svg')
-	};
 }
