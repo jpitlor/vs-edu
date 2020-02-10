@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import { Test } from "./extension";
+import { icon } from "./util";
 
 export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 	private _onDidChangeTreeData: vscode.EventEmitter<Test | undefined> = new vscode.EventEmitter<Test | undefined>();
@@ -106,4 +107,9 @@ export class TestTreeItem extends vscode.TreeItem {
 	) {
 		super(label, collapsibleState);
 	}
+
+	iconPath = {
+		light: icon('solid', 'question'),
+		dark: icon('regular', 'question')
+	};
 }

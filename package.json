@@ -21,8 +21,8 @@
 				"command": "vsEdu.refresh",
 				"title": "Refresh",
 				"icon": {
-					"light": "media/light/refresh.svg",
-					"dark": "media/dark/refresh.svg"
+					"light": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/sync.svg",
+					"dark": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/sync.svg"
 				}
 			},
 			{
@@ -35,7 +35,7 @@
 				{
 					"id": "vs-edu",
 					"title": "VS Edu",
-					"icon": "media/icon.svg"
+					"icon": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/graduation-cap.svg"
 				}
 			]
 		},
@@ -95,6 +95,7 @@
 		"vscode-test": "^1.3.0"
 	},
 	"dependencies": {
+		"@fortawesome/fontawesome-pro": "^5.12.1",
 		"marked": "^0.8.0"
 	}
 }
