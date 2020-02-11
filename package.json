@@ -12,6 +12,7 @@
 	"activationEvents": [
 		"onCommand:vsEdu.openTest",
 		"onCommand:vsEdu.refresh",
+		"onCommand:vsEdu.runTest",
 		"onView:eduTests"
 	],
 	"main": "./out/extension.js",
@@ -28,6 +29,14 @@
 			{
 				"command": "vsEdu.openTest",
 				"title": "Show Test"
+			},
+			{
+				"command": "vsEdu.runTest",
+				"title": "Run Test",
+				"icon": {
+					"light": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/play.svg",
+					"dark": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/play.svg"
+				}
 			}
 		],
 		"viewsContainers": {
@@ -53,6 +62,13 @@
 					"command": "vsEdu.refresh",
 					"when": "view == eduTests",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "vsEdu.runTest",
+					"when": "view == eduTests && viewItem == test",
+					"group": "inline"
 				}
 			]
 		},

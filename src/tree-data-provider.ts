@@ -77,7 +77,7 @@ export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 				arguments: [element]
 			}
 			: undefined;
-		return new TestTreeItem(element.testName || element.levelName, collapsibleState, command);
+		return new TestTreeItem(element.testName || element.levelName, collapsibleState, element, command);
 	}
 	
 	getParent(element: Test): Test | null {
@@ -103,10 +103,13 @@ export class TestTreeItem extends vscode.TreeItem {
 	constructor(
 		public readonly label: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public readonly command?: vscode.Command
+		private readonly test: Test,
+		public readonly command?: vscode.Command,
 	) {
 		super(label, collapsibleState);
 	}
+
+	contextValue = this.test.filePath ? 'file' : 'test';
 
 	iconPath = {
 		light: icon('solid', 'question'),
