@@ -36,6 +36,10 @@ export class TestDescriptionPanel {
 		);
 	}
 
+	public static postMessage(message: object) {
+		this.currentPanel?._panel.webview.postMessage(message);
+	}
+
 	public static async createOrShow(extensionPath: string, test: Test) {
 		const courseFolder: string =
 			vscode.workspace.getConfiguration("vsEdu").get("courses") || "courses";
@@ -165,7 +169,15 @@ export class TestDescriptionPanel {
                 <body>
                     ${readme}
                     <div class="run-button-container">
-                        <button>Run ${test.testName || test.levelName}</button>
+                        <button>
+							Run ${test.testName || test.levelName}
+							&nbsp;&nbsp;
+							<div class="spinner">
+								<div class="bounce1"></div>
+								<div class="bounce2"></div>
+								<div class="bounce3"></div>
+							</div>
+						</button>
                     </div>
                     <script nonce="${nonce}" src="${scriptUri}"></script>
                 </body>
