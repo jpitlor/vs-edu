@@ -2,11 +2,12 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import { Test } from "./extension";
-import { icon } from "./util";
 
 export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 	private _onDidChangeTreeData: vscode.EventEmitter<Test | undefined> = new vscode.EventEmitter<Test | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<Test | undefined> = this._onDidChangeTreeData.event;
+
+	public constructor(private readonly extensionPath: string) {}
 	
 	refresh(): void {
 		this._onDidChangeTreeData.fire();
@@ -77,7 +78,7 @@ export class TestDataProvider implements vscode.TreeDataProvider<Test> {
 				arguments: [element]
 			}
 			: undefined;
-		return new TestTreeItem(element.testName || element.levelName, collapsibleState, element, command);
+		return new TestTreeItem(element.testName || element.levelName, collapsibleState, element, this.extensionPath, command);
 	}
 	
 	getParent(element: Test): Test | null {
@@ -104,6 +105,7 @@ export class TestTreeItem extends vscode.TreeItem {
 		public readonly label: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
 		private readonly test: Test,
+		private readonly extensionPath: string,
 		public readonly command?: vscode.Command,
 	) {
 		super(label, collapsibleState);
@@ -112,7 +114,7 @@ export class TestTreeItem extends vscode.TreeItem {
 	contextValue = this.test.filePath ? 'file' : 'test';
 
 	iconPath = {
-		light: icon('solid', 'question'),
-		dark: icon('regular', 'question')
+		light: path.resolve(this.extensionPath, "media", "light", "question.svg"),
+		dark: path.resolve(this.extensionPath, "media", "dark", "question.svg")
 	};
 }

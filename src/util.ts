@@ -2,20 +2,6 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Test, Env } from "./extension";
 
-export function icon(variant: string, icon: string): string {
-	return path.join(
-		__filename,
-		"..",
-		"..",
-		"node_modules",
-		"@fortawesome",
-		"fontawesome-pro",
-		"svgs",
-		variant,
-		icon + ".svg"
-	);
-}
-
 export function rootDirectory(): vscode.Uri {
 	const rootDir = vscode.workspace.workspaceFolders?.[0].uri;
 	

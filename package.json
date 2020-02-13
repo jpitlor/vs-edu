@@ -22,8 +22,8 @@
 				"command": "vsEdu.refresh",
 				"title": "Refresh",
 				"icon": {
-					"light": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/sync.svg",
-					"dark": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/sync.svg"
+					"light": "media/light/sync.svg",
+					"dark": "media/dark/sync.svg"
 				}
 			},
 			{
@@ -34,8 +34,8 @@
 				"command": "vsEdu.runTest",
 				"title": "Run Test",
 				"icon": {
-					"light": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/play.svg",
-					"dark": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/play.svg"
+					"light": "media/light/play.svg",
+					"dark": "media/dark/play.svg"
 				}
 			}
 		],
@@ -44,7 +44,7 @@
 				{
 					"id": "vs-edu",
 					"title": "VS Edu",
-					"icon": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/graduation-cap.svg"
+					"icon": "media/light/graduation-cap.svg"
 				}
 			]
 		},
@@ -94,7 +94,8 @@
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
 		"pretest": "yarn run compile && yarn run lint",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"build-icons": "node build-icons.js"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",

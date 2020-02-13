@@ -17,7 +17,7 @@ export enum Env {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	const testDataProvider = new TestDataProvider();
+	const testDataProvider = new TestDataProvider(context.extensionPath);
 	vscode.window.registerTreeDataProvider("eduTests", testDataProvider);
 	vscode.commands.registerCommand("vsEdu.refresh", () => testDataProvider.refresh());
 	vscode.commands.registerCommand("vsEdu.runTest", (test: Test) => runTest(context.workspaceState, test));

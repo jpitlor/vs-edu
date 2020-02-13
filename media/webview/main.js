@@ -9,11 +9,12 @@
 	button.addEventListener("click", () => {
 		vscode.postMessage({ command: "runTest" });
 	});
-
+ 
 	window.addEventListener("message", event => {
 		document.write(JSON.stringify(message));
 		const message = event.data;
 		switch (message.command) {
+
 			case "setTestState":
 				button.className = message.value;
 				vscode.setState({ testState: message.value });
