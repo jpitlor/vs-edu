@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { Test } from "./extension";
-import { TestRepository } from "./test-repository";
+import * as TestRepository from "./test-repository";
 
 const _onDidChangeTreeData: vscode.EventEmitter<Test | undefined> = new vscode.EventEmitter<Test | undefined>();
 const onDidChangeTreeData: vscode.Event<Test | undefined> = _onDidChangeTreeData.event;

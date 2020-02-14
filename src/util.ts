@@ -5,15 +5,24 @@ export function rootDirectory(): vscode.Uri {
 	const rootDir = vscode.workspace.workspaceFolders?.[0].uri;
 	
 	if (!rootDir) {
-		vscode.window.showErrorMessage("VS Edu doesn't work if you don't have a folder open");
-		throw new Error("VS Edu doesn't work if you don't have a folder open");
+		const error = "VS Edu doesn't work if you don't have a folder open";
+		vscode.window.showErrorMessage(error);
+		throw new Error(error);
 	}
 
 	return rootDir;
 }
 
 export function get(key: string): string {
-	return vscode.workspace.getConfiguration('vsEdu').get(key) || "";
+	const envVar = vscode.workspace.getConfiguration("vsEdu").get<string>(key);
+
+	if (!envVar) {
+		const error = "There's a mistake in the code. You tried to access an environment variable that doesn't exist!";
+		vscode.window.showErrorMessage(error);
+		throw new Error(error);
+	}
+
+	return envVar;
 }
 
 export function readDirectory(dir: string): Thenable<[string, vscode.FileType][]> {
