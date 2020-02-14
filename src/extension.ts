@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 
-import { TreeViewDataProvider } from "./tree-view-data-provider";
+import { treeViewDataProvider, refreshTreeView, initTreeView } from "./tree-view-data-provider";
 import { TestDescriptionPanel } from "./readme-webview";
 import { runTest } from "./test-runner";
+import * as Commands from "./commands";
 
 export interface Test {
 	levelName: string;
@@ -17,23 +18,15 @@ export enum Env {
 	COURSE_DIRECTORY = "courseDirectory"
 }
 
-function refresh() {
+export async function activate(context: vscode.ExtensionContext) {
+	await initTreeView(context.extensionPath);
+	Commands.init(context);
 
-}
-
-export function activate(context: vscode.ExtensionContext) {
-	const testDataProvider = new TreeViewDataProvider(context.extensionPath);
-	vscode.window.registerTreeDataProvider("eduTests", testDataProvider);
-	vscode.commands.registerCommand("vsEdu.refresh", () =>
-		testDataProvider.refresh()
-	);
-	vscode.commands.registerCommand("vsEdu.runTest", (test: Test) =>
-		runTest(context.workspaceState, test)
-	);
-
+	vscode.window.registerTreeDataProvider("eduTests", treeViewDataProvider);
+	vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest);
+	vscode.commands.registerCommand("vsEdu.refresh", Commands.refresh);
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vsEdu.openTest", (test: Test) => {
-			TestDescriptionPanel.createOrShow(context.extensionPath, test);
-		})
+		// This one is special because it involves the webview
+		vscode.commands.registerCommand("vsEdu.openTest", Commands.openTest)
 	);
 }

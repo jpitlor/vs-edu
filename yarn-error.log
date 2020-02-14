@@ -1,28 +1,30 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js install
+  C:\Program Files\nodejs\node.exe C:\Users\jpitlor\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js install
 
 PATH: 
-  C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Docker\Docker\Resources\bin;C:\Python27\;C:\Python27\Scripts;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\compiler;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\ProgramData\chocolatey\bin;C:\Program Files\dotnet\;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\compiler;C:\Ruby25-x64\bin;C:\Users\jpitl\AppData\Local\Microsoft\WindowsApps;C:\Users\jpitl\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\jpitl\Code\flutter\flutter\bin;C:\Users\jpitl\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Program Files\Java\jdk-12.0.1\bin;C:\Users\jpitl\AppData\Roaming\npm;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Python27\;C:\Python27\Scripts;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\PROGRA~1\IBM\SQLLIB\BIN;C:\PROGRA~1\IBM\SQLLIB\FUNCTION;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\TortoiseSVN\bin;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\ProgramData\chocolatey\bin;%NVM_HOME%;%NVM_SYMLINK%;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\jpitlor\AppData\Local\Programs\Python\Python38-32\Scripts\;C:\Users\jpitlor\AppData\Local\Programs\Python\Python38-32\;C:\Users\jpitlor\AppData\Local\Microsoft\WindowsApps;C:\Users\jpitlor\AppData\Roaming\nvm;C:\Users\jpitlor\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\jpitlor\bin;C:\Program Files\apache\maven\bin;C:\Program Files\Java\jdk1.8.0_231\bin;C:\Users\jpitlor\.dotnet\tools;C:\Users\jpitlor\AppData\Local\hyper\app-3.0.2\resources\bin;C:\Users\jpitlor\AppData\Roaming\npm;C:\Users\jpitlor\AppData\Roaming\nvm;C:\Program Files\nodejs
 
 Yarn version: 
   1.21.1
 
 Node version: 
-  12.13.0
+  13.7.0
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: Failed to replace env in config: ${FONTAWESOME_NPM_AUTH_TOKEN}
-      at C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:98790:13
-      at String.replace (<anonymous>)
-      at envReplace (C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:98785:16)
-      at Function.normalizeConfig (C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:31887:69)
-      at NpmRegistry.<anonymous> (C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:31917:34)
-      at Generator.next (<anonymous>)
-      at step (C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:310:30)
-      at C:\Users\jpitl\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:321:13
+  Error: https://npm.fontawesome.com/@fortawesome/fontawesome-pro/-/5.12.1/fontawesome-pro-5.12.1.tgz: Request failed "401 Unauthorized"
+      at ResponseError.ExtendableBuiltin (C:\Users\jpitlor\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:696:66)
+      at new ResponseError (C:\Users\jpitlor\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:802:124)
+      at Request.<anonymous> (C:\Users\jpitlor\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:67017:16)
+      at Request.emit (events.js:321:20)
+      at Request.module.exports.Request.onRequestResponse (C:\Users\jpitlor\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141542:10)
+      at ClientRequest.emit (events.js:321:20)
+      at HTTPParser.parserOnIncomingClient [as onIncoming] (_http_client.js:602:27)
+      at HTTPParser.parserOnHeadersComplete (_http_common.js:116:17)
+      at TLSSocket.socketOnData (_http_client.js:471:22)
+      at TLSSocket.emit (events.js:321:20)
 
 npm manifest: 
   {
@@ -39,6 +41,7 @@ npm manifest:
   	"activationEvents": [
   		"onCommand:vsEdu.openTest",
   		"onCommand:vsEdu.refresh",
+  		"onCommand:vsEdu.runTest",
   		"onView:eduTests"
   	],
   	"main": "./out/extension.js",
@@ -48,13 +51,21 @@ npm manifest:
   				"command": "vsEdu.refresh",
   				"title": "Refresh",
   				"icon": {
-  					"light": "media/light/refresh.svg",
-  					"dark": "media/dark/refresh.svg"
+  					"light": "media/light/sync.svg",
+  					"dark": "media/dark/sync.svg"
   				}
   			},
   			{
   				"command": "vsEdu.openTest",
   				"title": "Show Test"
+  			},
+  			{
+  				"command": "vsEdu.runTest",
+  				"title": "Run Test",
+  				"icon": {
+  					"light": "media/light/play.svg",
+  					"dark": "media/dark/play.svg"
+  				}
   			}
   		],
   		"viewsContainers": {
@@ -62,7 +73,7 @@ npm manifest:
   				{
   					"id": "vs-edu",
   					"title": "VS Edu",
-  					"icon": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/graduation-cap.svg"
+  					"icon": "media/light/graduation-cap.svg"
   				}
   			]
   		},
@@ -81,17 +92,24 @@ npm manifest:
   					"when": "view == eduTests",
   					"group": "navigation"
   				}
+  			],
+  			"view/item/context": [
+  				{
+  					"command": "vsEdu.runTest",
+  					"when": "view == eduTests && viewItem == test",
+  					"group": "inline"
+  				}
   			]
   		},
   		"configuration": {
   			"title": "VS Edu",
   			"properties": {
-  				"vsEdu.testPath": {
+  				"vsEdu.testDirectory": {
   					"type": "string",
   					"default": "tests",
   					"description": "Path of the tests used for grading"
   				},
-  				"vsEdu.coursePath": {
+  				"vsEdu.courseDirectory": {
   					"type": "string",
   					"default": "courses",
   					"description": "Path of the courses to be completed"
@@ -105,10 +123,12 @@ npm manifest:
   		"lint": "eslint src --ext ts",
   		"watch": "tsc -watch -p ./",
   		"pretest": "yarn run compile && yarn run lint",
-  		"test": "node ./out/test/runTest.js"
+  		"test": "node ./out/test/runTest.js",
+  		"build-icons": "node build-icons.js"
   	},
   	"devDependencies": {
   		"@types/glob": "^7.1.1",
+  		"@types/lodash": "^4.14.149",
   		"@types/marked": "^0.7.2",
   		"@types/mocha": "^7.0.1",
   		"@types/node": "^12.11.7",
@@ -123,6 +143,7 @@ npm manifest:
   	},
   	"dependencies": {
   		"@fortawesome/fontawesome-pro": "^5.12.1",
+  		"lodash": "^4.17.15",
   		"marked": "^0.8.0"
   	}
   }
@@ -179,6 +200,11 @@ Lockfile:
     version "7.0.4"
     resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.4.tgz#38fd73ddfd9b55abb1e1b2ed578cb55bd7b7d339"
     integrity sha512-8+KAKzEvSUdeo+kmqnKrqgeE+LcA0tjYWFY7RPProVYwnqDjukzO+3b6dLD56rYX5TdWejnEOLJYOIeh4CXKuA==
+  
+  "@types/lodash@^4.14.149":
+    version "4.14.149"
+    resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
+    integrity sha512-ijGqzZt/b7BfzcK9vTrS6MFljQRPn5BFWOx8oE0GYxribu6uV+aA9zZuXI1zc/etK9E8nrgdoF2+LgUw7+9tJQ==
   
   "@types/marked@^0.7.2":
     version "0.7.2"

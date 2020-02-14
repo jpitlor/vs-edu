@@ -30,6 +30,9 @@ function buildIcon(svg, lighten = false) {
 	`;
 }
 
+fs.mkdirSync(path.join(__dirname, "media", "light"));
+fs.mkdirSync(path.join(__dirname, "media", "dark"));
+
 JSON.parse(
 	fs.readFileSync(path.join(__dirname, "media", "icons.json"), {
 		encoding: "utf-8"
