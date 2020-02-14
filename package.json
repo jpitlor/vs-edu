@@ -75,12 +75,12 @@
 		"configuration": {
 			"title": "VS Edu",
 			"properties": {
-				"vsEdu.testPath": {
+				"vsEdu.testDirectory": {
 					"type": "string",
 					"default": "tests",
 					"description": "Path of the tests used for grading"
 				},
-				"vsEdu.coursePath": {
+				"vsEdu.courseDirectory": {
 					"type": "string",
 					"default": "courses",
 					"description": "Path of the courses to be completed"
@@ -99,6 +99,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
+		"@types/lodash": "^4.14.149",
 		"@types/marked": "^0.7.2",
 		"@types/mocha": "^7.0.1",
 		"@types/node": "^12.11.7",
@@ -113,6 +114,7 @@
 	},
 	"dependencies": {
 		"@fortawesome/fontawesome-pro": "^5.12.1",
+		"lodash": "^4.17.15",
 		"marked": "^0.8.0"
 	}
 }

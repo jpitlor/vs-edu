@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import { TestDataProvider } from "./tree-data-provider";
-import { TestDescriptionPanel } from "./test-description-panel";
+import { TreeViewDataProvider } from "./tree-view-data-provider";
+import { TestDescriptionPanel } from "./readme-webview";
 import { runTest } from "./test-runner";
 
 export interface Test {
@@ -13,14 +13,23 @@ export interface Test {
 }
 
 export enum Env {
-	TEST_DIRECTORY = "testDirectory"
+	TEST_DIRECTORY = "testDirectory",
+	COURSE_DIRECTORY = "courseDirectory"
+}
+
+function refresh() {
+
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	const testDataProvider = new TestDataProvider(context.extensionPath);
+	const testDataProvider = new TreeViewDataProvider(context.extensionPath);
 	vscode.window.registerTreeDataProvider("eduTests", testDataProvider);
-	vscode.commands.registerCommand("vsEdu.refresh", () => testDataProvider.refresh());
-	vscode.commands.registerCommand("vsEdu.runTest", (test: Test) => runTest(context.workspaceState, test));
+	vscode.commands.registerCommand("vsEdu.refresh", () =>
+		testDataProvider.refresh()
+	);
+	vscode.commands.registerCommand("vsEdu.runTest", (test: Test) =>
+		runTest(context.workspaceState, test)
+	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vsEdu.openTest", (test: Test) => {
