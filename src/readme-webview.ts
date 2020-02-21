@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as marked from "marked";
-import { Test } from "./extension";
+import { Test, Env } from "./extension";
+import { get, rootDirectory } from "./util";
 
 export class TestDescriptionPanel {
 	public static readonly viewType = "eduTest";
@@ -109,31 +110,24 @@ export class TestDescriptionPanel {
 
 	private async _update(test: Test) {
 		const { testName, testNumber, levelName, levelNumber } = test;
-		const courseFolder: string =
-			vscode.workspace.getConfiguration("vsEdu").get("courses") || "courses";
-		const workspaces = vscode.workspace.workspaceFolders;
-		if (!workspaces) {
-			return;
-		}
+		const courseFolder: string = get(Env.COURSE_DIRECTORY);
 
 		const webview = this._panel.webview;
 		this._panel.title = test.testName || test.levelName;
 
-		const scriptPathOnDisk = vscode.Uri.file(
+		const scriptUri = webview.asWebviewUri(vscode.Uri.file(
 			path.join(this._extensionPath, "media", "webview", "main.js")
-		);
-		const stylesPathOnDisk = vscode.Uri.file(
+		));
+		const stylesUri = webview.asWebviewUri(vscode.Uri.file(
 			path.join(this._extensionPath, "media", "webview", "main.css")
-		);
-		const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
-		const stylesUri = webview.asWebviewUri(stylesPathOnDisk);
+		));
 		const readme = marked(
 			(
 				await vscode.workspace.fs.readFile(
 					vscode.Uri.parse(
 						"file:" +
 							path.join(
-								workspaces[0].uri.fsPath,
+								rootDirectory().fsPath,
 								courseFolder,
 								`${levelNumber} ${levelName}`,
 								`${testNumber} ${testName}`,

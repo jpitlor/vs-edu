@@ -34,8 +34,7 @@ body {
 	border: 3px solid #9b0000;
 }
 
-.run-button-container.success .spinner,
-.run-button-container.error .spinner {
+.run-button-container:not(.running) .spinner {
 	display: none;
 }
 

@@ -23,10 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	Commands.init(context);
 
 	vscode.window.registerTreeDataProvider("eduTests", treeViewDataProvider);
-	vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest);
-	vscode.commands.registerCommand("vsEdu.refresh", Commands.refresh);
-	context.subscriptions.push(
-		// This one is special because it involves the webview
-		vscode.commands.registerCommand("vsEdu.openTest", Commands.openTest)
-	);
+	context.subscriptions.push(vscode.commands.registerCommand("vsEdu.openTest", Commands.openTest));
+	context.subscriptions.push(vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest));
+	context.subscriptions.push(vscode.commands.registerCommand("vsEdu.refresh", Commands.refresh));
 }
