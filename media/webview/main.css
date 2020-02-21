@@ -34,7 +34,7 @@ body {
 	border: 3px solid #9b0000;
 }
 
-.run-button-container:not(.running) .spinner {
+.run-button-container:not(.in-progress) .spinner {
 	display: none;
 }
 

@@ -17,6 +17,7 @@ export function openTest(test: Test) {
 }
 
 export function runTest(test: Test) {
+    TestDescriptionPanel.postMessage({command: "setTestState", value: "in-progress"});
     TestRunner.runTest(workspaceState, test);
 }
 

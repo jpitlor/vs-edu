@@ -73,18 +73,15 @@ export class TestDescriptionPanel {
 
 		await vscode.window.showTextDocument(
 			textDocument,
-			vscode.ViewColumn.Active
+			vscode.ViewColumn.One
 		);
 		const panel = vscode.window.createWebviewPanel(
 			TestDescriptionPanel.viewType,
 			testName || levelName,
-			vscode.ViewColumn.Beside,
+			vscode.ViewColumn.Two,
 			{
 				enableScripts: true,
-				localResourceRoots: [
-					...(vscode.workspace.workspaceFolders?.map(f => f.uri) || []),
-					vscode.Uri.file(path.join(extensionPath, "media", "webview"))
-				]
+				localResourceRoots: [vscode.Uri.file(path.join(extensionPath, "media", "webview"))]
 			}
 		);
 
@@ -143,7 +140,8 @@ export class TestDescriptionPanel {
             default-src 'none'; 
             img-src ${webview.cspSource} https:;
             script-src 'nonce-${nonce}';
-            style-src 'nonce-${nonce}'`;
+			style-src 'nonce-${nonce}'
+		`;
 		this._panel.webview.html = /* html */ `
             <!DOCTYPE html>
             <html lang="en">
