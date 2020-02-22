@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { Test } from "./extension";
 import * as TestRunner from "./test-runner";
-import { refreshTreeView } from "./tree-view-data-provider";
-import { TestDescriptionPanel } from "./readme-webview";
+import { refreshTreeView } from "./test-lister";
+import * as TestOpener from "./test-opener";
 
 let extensionPath: string;
 let workspaceState: vscode.Memento; 
@@ -13,11 +13,11 @@ export function init(context: vscode.ExtensionContext) {
 }
 
 export function openTest(test: Test) {
-    TestDescriptionPanel.createOrShow(extensionPath, test);
+    TestOpener.openTest(extensionPath, test);
 }
 
 export function runTest(test: Test) {
-    TestDescriptionPanel.postMessage({command: "setTestState", value: "in-progress"});
+    TestOpener.postMessage({command: "setTestState", value: "in-progress"});
     TestRunner.runTest(workspaceState, test);
 }
 

@@ -22,19 +22,19 @@ body {
 	border: 3px solid #c67c00;
 }
 
-.run-button-container.success button {
+.run-button-container button.success {
 	background: #5efc82;
 	color: #009624;
 	border: 3px solid #009624;
 }
 
-.run-button-container.error button {
+.run-button-container button.error {
 	background: #ff5131;
 	color: #9b0000;
 	border: 3px solid #9b0000;
 }
 
-.run-button-container:not(.in-progress) .spinner {
+.run-button-container button:not(.in-progress) .spinner {
 	display: none;
 }
 

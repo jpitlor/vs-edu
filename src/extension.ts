@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
 
-import { treeViewDataProvider, refreshTreeView, initTreeView } from "./tree-view-data-provider";
-import { TestDescriptionPanel } from "./readme-webview";
-import { runTest } from "./test-runner";
+import { treeViewDataProvider, refreshTreeView, initTreeView } from "./test-lister";
 import * as Commands from "./commands";
 
 export interface Test {
