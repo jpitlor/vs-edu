@@ -1,5 +1,6 @@
 {
 	"name": "vs-edu",
+	"publisher": "jpitlor",
 	"displayName": "VS Edu",
 	"description": "An educational extension of VS Code, modeled after JetbrainsEdu",
 	"version": "0.0.1",
@@ -93,8 +94,7 @@
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"test": "node ./out/test/runTest.js",
+		"test": "yarn run compile && yarn run lint",
 		"build-icons": "node build-icons.js"
 	},
 	"devDependencies": {
