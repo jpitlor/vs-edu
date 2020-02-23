@@ -34,7 +34,13 @@ async function getChildren(element?: Test): Promise<Test[]> {
 	}
 
 	// If element is a level, return the tests
-	return TestRepository.getTests(element.levelNumber);
+	const tests = TestRepository.getTests(element.levelNumber);
+	tests.sort((a, b) => {
+		if ((a.testNumber || 0) > (b.testNumber || 0)) { return 1; }
+		else if (a.testNumber === b.testNumber) { return 0; }
+		else { return -1; }
+	});
+	return tests;
 }
 
 function getTreeItem(element: Test): vscode.TreeItem {

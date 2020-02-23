@@ -11,27 +11,41 @@ body {
 	margin-top: 3rem;
 }
 
+.run-button-container svg {
+	display: none;
+}
+
 .run-button-container button {
 	padding: 1rem 2rem;
 	border-radius: 10px;
 	font-weight: bold;
 	font-size: 18px;
 
-	background: #fff176;
-	color: #c67c00;
-	border: 3px solid #c67c00;
+	background: #ffc947;
+	color: #c66900;
+	border: 3px solid #c66900;
 }
 
-.run-button-container button.success {
-	background: #5efc82;
-	color: #009624;
-	border: 3px solid #009624;
+.run-button-container button.passed {
+	background: #80e27e;
+	color: #087f23;
+	border: 3px solid #087f23;
 }
 
-.run-button-container button.error {
-	background: #ff5131;
-	color: #9b0000;
-	border: 3px solid #9b0000;
+.run-button-container button.passed .fa-check {
+	display: inline-block;
+	height: 18px;
+}
+
+.run-button-container button.failed {
+	background: #ff7961;
+	color: #ba000d;
+	border: 3px solid #ba000d;
+}
+
+.run-button-container button.failed .fa-times {
+	display: inline-block;
+	height: 18px;
 }
 
 .run-button-container button:not(.in-progress) .spinner {

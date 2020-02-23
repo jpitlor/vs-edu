@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { treeViewDataProvider, refreshTreeView, initTreeView } from "./test-lister";
+import { treeViewDataProvider, initTreeView } from "./test-lister";
 import * as Commands from "./commands";
 
 export interface Test {
@@ -21,7 +21,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	Commands.init(context);
 
 	vscode.window.registerTreeDataProvider("eduTests", treeViewDataProvider);
-	context.subscriptions.push(vscode.commands.registerCommand("vsEdu.openTest", Commands.openTest));
-	context.subscriptions.push(vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest));
-	context.subscriptions.push(vscode.commands.registerCommand("vsEdu.refresh", Commands.refresh));
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vsEdu.openTest", Commands.openTest),
+		vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest),
+		vscode.commands.registerCommand("vsEdu.refresh", Commands.refresh)
+	);
 }
