@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as _ from "lodash";
-import { get } from "./util";
-import { Env, Test } from "./extension";
+import { getEnv } from "./util";
+import { Env, Test, TestState } from "./extension";
 
 interface Level {
 	[levelNumber: string]: Test[];
@@ -20,14 +20,20 @@ interface Repo {
 function fileToTest(filePath: vscode.Uri): Test {
 	const [, levelNumber, levelName, testNumber, testName] =
 		/(\d+) ([^/]+)\/(\d+) ([^/]+)/.exec(filePath.path) || [];
-	return { levelName, levelNumber, testName, testNumber, filePath };
+	return { levelName, levelNumber, testName, testNumber, filePath, state: TestState.UNKNOWN };
 }
 
 let _repo: Repo = { levels: [], tests: {}, files: {} };
 
-export async function refresh() {
+export async function refresh(cache?: vscode.Memento, useCache = false) {
+	const cachedRepo = cache?.get<Repo>("vsEdu.tests");
+	if (cachedRepo  && useCache) {
+		_repo = cachedRepo;
+		return;
+	}
+
 	const repo: Repo = { levels: [], tests: {}, files: {} };
-	const courseDirectory = get(Env.COURSE_DIRECTORY);
+	const courseDirectory = getEnv(Env.COURSE_DIRECTORY);
 	const files = (await vscode
 		.workspace
 		.findFiles(`${courseDirectory}/**/*`))
@@ -35,15 +41,24 @@ export async function refresh() {
 
 	repo.files = _.groupBy(files, f => `${f.levelNumber}-${f.testNumber}`);
 	repo.tests = _.groupBy(
-		_.uniqBy(files, "testNumber").map(t => ({ ...t, filePath: undefined })),
+		_.uniqBy(files, "testNumber").map(t => ({ 
+			...t, 
+			filePath: undefined,
+			state: cache?.get<TestState>(`${t.levelNumber}-${t.testNumber}`) || TestState.UNKNOWN,
+		})),
 		"levelNumber"
 	);
 	repo.levels = _.uniqBy(
-		files.map(f => ({ levelName: f.levelName, levelNumber: f.levelNumber })),
+		files.map(f => ({ 
+			levelName: f.levelName,
+			levelNumber: f.levelNumber,
+			state: TestState.UNKNOWN,
+		})),
 		"levelNumber"
 	);
 
 	_repo = repo;
+	cache?.update("vsEdu.tests", repo);
 }
 
 export function getLevels(): Test[] {

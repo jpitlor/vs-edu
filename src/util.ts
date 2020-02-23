@@ -13,7 +13,7 @@ export function rootDirectory(): vscode.Uri {
 	return rootDir;
 }
 
-export function get(key: string): string {
+export function getEnv(key: string): string {
 	const envVar = vscode.workspace.getConfiguration("vsEdu").get<string>(key);
 
 	if (!envVar) {

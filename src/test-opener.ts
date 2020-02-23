@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as marked from "marked";
 import { Test, Env } from "./extension";
-import { get, rootDirectory } from "./util";
+import { getEnv, rootDirectory } from "./util";
 
 let _test: Test | undefined;
 let textDocument: vscode.TextDocument | undefined;
@@ -18,7 +18,7 @@ export function postMessage(message: object) {
 }
 
 export async function openTest(extensionPath: string, test: Test) {
-	const courseFolder: string = get(Env.COURSE_DIRECTORY);
+	const courseFolder: string = getEnv(Env.COURSE_DIRECTORY);
 
 	if (textDocument && panel) {
 		vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
