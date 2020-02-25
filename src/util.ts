@@ -1,6 +1,15 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { Test } from "./extension";
+import { Test, Env } from "./extension";
+
+let extensionPath: string;
+export function InitUtils(context: vscode.ExtensionContext) {
+	extensionPath = context.extensionPath;
+}
+
+export function getExtensionPath(): string {
+	return extensionPath;
+}
 
 export function rootDirectory(): vscode.Uri {
 	const rootDir = vscode.workspace.workspaceFolders?.[0].uri;
@@ -28,6 +37,21 @@ export function getEnv(key: string): string {
 
 export function readDirectory(dir: string): Thenable<[string, vscode.FileType][]> {
 	return vscode.workspace.fs.readDirectory(vscode.Uri.parse(path.join(rootDirectory().fsPath, dir)));
+}
+
+export function filePath(test: Test): string {
+	const courseFolder: string = getEnv(Env.COURSE_DIRECTORY);
+	return test.filePath?.fsPath || path.join(
+		rootDirectory().fsPath,
+		courseFolder,
+		`${test.levelNumber} ${test.levelName}`,
+		`${test.testNumber} ${test.testName}`,
+		"index.js"
+	);
+}
+
+export function extensionFilePath(...folders: string[]): vscode.Uri {
+	return vscode.Uri.file(path.join(extensionPath, ...folders));
 }
 
 export function testEquals(t1: Test, t2?: Test): boolean {

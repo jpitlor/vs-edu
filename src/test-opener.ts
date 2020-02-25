@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as marked from "marked";
 import { Test, Env } from "./extension";
-import { getEnv, rootDirectory, testEquals } from "./util";
+import { getEnv, rootDirectory, testEquals, filePath } from "./util";
 
 let _test: Test | undefined;
 let textDocument: vscode.TextDocument | undefined;
@@ -27,17 +27,8 @@ export async function openTest(extensionPath: string, test: Test, _panel?: vscod
 	}
 
 	_test = test;
-	const { testName, testNumber, levelName, levelNumber, filePath } = test;
-	const newFile = path.join(
-		rootDirectory().fsPath,
-		courseFolder,
-		`${levelNumber} ${levelName}`,
-		`${testNumber} ${testName}`,
-		"index.js"
-	);
-	textDocument = await vscode.workspace.openTextDocument(
-		filePath?.fsPath || `${newFile.replace(/\/$/, "")}`
-	);
+	const { testName, testNumber, levelName, levelNumber } = test;
+	textDocument = await vscode.workspace.openTextDocument(filePath(test));
 
 	await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
 	panel = _panel || panel || vscode.window.createWebviewPanel(
