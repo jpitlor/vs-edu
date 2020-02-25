@@ -36,11 +36,11 @@ export async function openTest(extensionPath: string, test: Test, _panel?: vscod
 		"index.js"
 	);
 	textDocument = await vscode.workspace.openTextDocument(
-		filePath || vscode.Uri.parse(`file:${newFile.replace(/\/$/, "")}`)
+		filePath?.fsPath || `${newFile.replace(/\/$/, "")}`
 	);
 
 	await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
-	panel = _panel || vscode.window.createWebviewPanel(
+	panel = _panel || panel || vscode.window.createWebviewPanel(
 		"eduTest",
 		testName || levelName,
 		vscode.ViewColumn.Two,
