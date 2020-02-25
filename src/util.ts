@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
+import { Test } from "./extension";
 
 export function rootDirectory(): vscode.Uri {
 	const rootDir = vscode.workspace.workspaceFolders?.[0].uri;
@@ -27,4 +28,8 @@ export function getEnv(key: string): string {
 
 export function readDirectory(dir: string): Thenable<[string, vscode.FileType][]> {
 	return vscode.workspace.fs.readDirectory(vscode.Uri.parse(path.join(rootDirectory().fsPath, dir)));
+}
+
+export function testEquals(t1: Test, t2?: Test): boolean {
+	return t2 !== undefined && t1.levelNumber === t2.levelNumber && t1.testNumber === t2.testNumber;
 }

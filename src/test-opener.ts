@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as marked from "marked";
 import { Test, Env } from "./extension";
-import { getEnv, rootDirectory } from "./util";
+import { getEnv, rootDirectory, testEquals } from "./util";
 
 let _test: Test | undefined;
 let textDocument: vscode.TextDocument | undefined;
@@ -17,10 +17,10 @@ export function postMessage(message: object) {
 	panel?.webview.postMessage(message);
 }
 
-export async function openTest(extensionPath: string, test: Test) {
+export async function openTest(extensionPath: string, test: Test, _panel?: vscode.WebviewPanel) {
 	const courseFolder: string = getEnv(Env.COURSE_DIRECTORY);
 
-	if (textDocument && panel) {
+	if (!_panel && textDocument && panel && testEquals(test, _test)) {
 		vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
 		panel.reveal(vscode.ViewColumn.Two);
 		return;
@@ -40,7 +40,7 @@ export async function openTest(extensionPath: string, test: Test) {
 	);
 
 	await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
-	panel = vscode.window.createWebviewPanel(
+	panel = _panel || vscode.window.createWebviewPanel(
 		"eduTest",
 		testName || levelName,
 		vscode.ViewColumn.Two,
@@ -133,6 +133,8 @@ export async function openTest(extensionPath: string, test: Test) {
 		null,
 		disposables
 	);
+
+	postMessage({command: "setTest", value: test});
 }
 
 function dispose() {

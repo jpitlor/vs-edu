@@ -14,7 +14,8 @@
 		"onCommand:vsEdu.openTest",
 		"onCommand:vsEdu.refresh",
 		"onCommand:vsEdu.runTest",
-		"onView:eduTests"
+		"onView:eduTests",
+		"onWebviewPanel:eduTest"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

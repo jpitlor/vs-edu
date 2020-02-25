@@ -17,6 +17,9 @@
 				button.className = message.value;
 				vscode.setState({ testState: message.value });
 				break;
+			case "setTest":
+				vscode.setState({ test: message.value });
+				break;
 		}
 	});
 })();

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { treeViewDataProvider, initTreeView } from "./test-lister";
+import { TestReopener, initTestReopener } from "./test-reopener";
 import * as Commands from "./commands";
 
 export const enum TestState {
@@ -25,9 +26,11 @@ export enum Env {
 
 export async function activate(context: vscode.ExtensionContext) {
 	await initTreeView(context);
+	initTestReopener(context);
 	Commands.init(context);
 
 	vscode.window.registerTreeDataProvider("eduTests", treeViewDataProvider);
+	vscode.window.registerWebviewPanelSerializer("eduTest", TestReopener);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vsEdu.openTest", Commands.openTest),
 		vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest),
