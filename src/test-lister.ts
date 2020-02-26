@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { Test, TestState } from "./extension";
+import { Test, TestState, extensionPath } from "./extension";
 import * as TestRepository from "./test-repository";
 
 const _onDidChangeTreeData: vscode.EventEmitter<
@@ -14,14 +14,8 @@ const TestStatusIcons = {
 	[TestState.FAILED]: "times.svg"
 };
 
-let _extensionPath = "";
-export async function initTreeView(extension: vscode.ExtensionContext) {
-	await TestRepository.refresh(extension.workspaceState, true);
-	_extensionPath = extension.extensionPath;
-}
-
-export async function refreshTreeView(cache?: vscode.Memento) {
-	await TestRepository.refresh(cache);
+export async function refreshTreeView() {
+	await TestRepository.refresh();
 	_onDidChangeTreeData.fire();
 }
 
@@ -73,8 +67,8 @@ function getTreeItem(element: Test): vscode.TreeItem {
 		contextValue: element.filePath ? "file" : "test",
 		iconPath: isLeaf
 			? {
-					light: path.resolve(_extensionPath, "media", "light", icon),
-					dark: path.resolve(_extensionPath, "media", "dark", icon)
+					light: path.resolve(extensionPath(), "media", "light", icon),
+					dark: path.resolve(extensionPath(), "media", "dark", icon)
 			  }
 			: undefined
 	};

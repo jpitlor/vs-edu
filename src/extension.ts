@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import { treeViewDataProvider, initTreeView } from "./test-lister";
-import { TestReopener, initTestReopener } from "./test-reopener";
+import { treeViewDataProvider, refreshTreeView } from "./test-lister";
+import { TestReopener } from "./test-reopener";
 import * as Commands from "./commands";
 
 export const enum TestState {
@@ -15,7 +15,7 @@ export interface Test {
 	levelNumber: string;
 	testName?: string;
 	testNumber?: string;
-	filePath?: vscode.Uri;
+	filePath?: string;
 	state: TestState;
 }
 
@@ -24,10 +24,20 @@ export enum Env {
 	COURSE_DIRECTORY = "courseDirectory"
 }
 
+let _extensionPath: string;
+let _cache: vscode.Memento;
+
+export function extensionPath(): string {
+	return _extensionPath;
+}
+
+export function cache(): vscode.Memento {
+	return _cache;
+}
+
 export async function activate(context: vscode.ExtensionContext) {
-	await initTreeView(context);
-	initTestReopener(context);
-	Commands.init(context);
+	_extensionPath = context.extensionPath;
+	_cache = context.workspaceState;
 
 	vscode.window.registerTreeDataProvider("eduTests", treeViewDataProvider);
 	vscode.window.registerWebviewPanelSerializer("eduTest", TestReopener);
@@ -36,4 +46,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("vsEdu.runTest", Commands.runTest),
 		vscode.commands.registerCommand("vsEdu.refresh", Commands.refresh)
 	);
+
+	await refreshTreeView();
 }

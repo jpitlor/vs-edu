@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as _ from "lodash";
 import { getEnv } from "./util";
-import { Env, Test, TestState } from "./extension";
+import { Env, Test, TestState, cache } from "./extension";
 
 interface Level {
 	[levelNumber: string]: Test[];
@@ -17,21 +17,15 @@ interface Repo {
 	files: TestFiles;
 }
 
-function fileToTest(filePath: vscode.Uri): Test {
-	const [, levelNumber, levelName, testNumber, testName] =
-		/(\d+) ([^/]+)\/(\d+) ([^/]+)/.exec(filePath.path) || [];
+function fileToTest(file: vscode.Uri): Test {
+	const [, levelNumber, levelName, testNumber, testName, filePath] =
+		/(\d+) ([^/]+)\/(\d+) ([^/]+)\/(.*)/.exec(file.path) || [];
 	return { levelName, levelNumber, testName, testNumber, filePath, state: TestState.UNKNOWN };
 }
 
 let _repo: Repo = { levels: [], tests: {}, files: {} };
 
-export async function refresh(cache?: vscode.Memento, useCache = false) {
-	const cachedRepo = cache?.get<Repo>("vsEdu.tests");
-	if (cachedRepo  && useCache) {
-		_repo = cachedRepo;
-		return;
-	}
-
+export async function refresh() {
 	const repo: Repo = { levels: [], tests: {}, files: {} };
 	const courseDirectory = getEnv(Env.COURSE_DIRECTORY);
 	const files = (await vscode
@@ -44,7 +38,7 @@ export async function refresh(cache?: vscode.Memento, useCache = false) {
 		_.uniqBy(files, "testNumber").map(t => ({ 
 			...t, 
 			filePath: undefined,
-			state: cache?.get<TestState>(`${t.levelNumber}-${t.testNumber}`) || TestState.UNKNOWN,
+			state: cache().get<TestState>(`${t.levelNumber}-${t.testNumber}`) || TestState.UNKNOWN,
 		})),
 		"levelNumber"
 	);
@@ -58,7 +52,6 @@ export async function refresh(cache?: vscode.Memento, useCache = false) {
 	);
 
 	_repo = repo;
-	cache?.update("vsEdu.tests", repo);
 }
 
 export function getLevels(): Test[] {
@@ -71,7 +64,7 @@ export function getTests(levelNumber: string): Test[] {
 
 export function getReadme(test: Test): Test | undefined {
 	return _repo.files[`${test.levelNumber}-${test.testNumber}`]
-		.find(t => t.filePath?.path.includes("README.md"));
+		.find(t => t.filePath?.includes("README.md"));
 }
 
 export function getFiles(levelNumber: string, testNumber?: string): Test[] {

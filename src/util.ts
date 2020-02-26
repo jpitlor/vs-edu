@@ -36,17 +36,41 @@ export function getEnv(key: string): string {
 }
 
 export function readDirectory(dir: string): Thenable<[string, vscode.FileType][]> {
-	return vscode.workspace.fs.readDirectory(vscode.Uri.parse(path.join(rootDirectory().fsPath, dir)));
+	return vscode.workspace.fs.readDirectory(
+		vscode.Uri.parse(path.join(rootDirectory().fsPath, dir))
+	);
 }
 
-export function filePath(test: Test): string {
+export async function readWorkspaceFile(...file: string[]): Promise<string> {
+	const f = await vscode.workspace.fs.readFile(
+		vscode.Uri.file(
+			path.join(rootDirectory().fsPath, ...file)
+		)
+	);
+
+	return f.toString();
+}
+
+export async function readExtensionFile(...file: string[]): Promise<string> {
+	const f = await vscode.workspace.fs.readFile(
+		vscode.Uri.file(
+			path.join(extensionPath, ...file)
+		)
+	);
+
+	return f.toString();
+}
+
+export function testFilePath(test: Test): vscode.Uri {
 	const courseFolder: string = getEnv(Env.COURSE_DIRECTORY);
-	return test.filePath?.fsPath || path.join(
-		rootDirectory().fsPath,
-		courseFolder,
-		`${test.levelNumber} ${test.levelName}`,
-		`${test.testNumber} ${test.testName}`,
-		"index.js"
+	return vscode.Uri.file(
+		path.join(
+			rootDirectory().fsPath,
+			courseFolder,
+			`${test.levelNumber} ${test.levelName}`,
+			`${test.testNumber} ${test.testName}`,
+			test.filePath || "index.js"
+		)
 	);
 }
 

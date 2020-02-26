@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import child_process = require("child_process");
 import * as path from "path";
 
-import { Test, TestState } from "./extension";
+import { Test, TestState, cache } from "./extension";
 import * as TestOpener from "./test-opener";
 import { getTests } from "./test-repository";
 import { refreshTreeView } from "./test-lister";
@@ -25,11 +25,11 @@ async function cliRunTest(test: Test, token: vscode.CancellationToken): Promise<
 	});
 }
 
-export async function runTest(cache: vscode.Memento, test: Test): Promise<void> {
+export async function runTest(test: Test): Promise<void> {
 	const tests = testList(test);
 
-	tests.forEach(t => cache.update(`${t.levelNumber}-${t.testNumber}`, undefined));
-	refreshTreeView(cache);
+	tests.forEach(t => cache().update(`${t.levelNumber}-${t.testNumber}`, undefined));
+	refreshTreeView();
 
 	let testIsOpen = false;
 	tests.forEach(t => {
@@ -52,14 +52,14 @@ export async function runTest(cache: vscode.Memento, test: Test): Promise<void> 
 		Promise
 			.all(tests.map(async t => {
 				const result = await cliRunTest(t, token);
-				cache.update(`${t.levelNumber}-${t.testNumber}`, result ? TestState.PASSED : TestState.FAILED);
+				cache().update(`${t.levelNumber}-${t.testNumber}`, result ? TestState.PASSED : TestState.FAILED);
 				
 				testsFinished++;
 				progress.report({
 					increment: Math.floor(100 * testsFinished / testList.length)
 				});
 
-				refreshTreeView(cache);
+				refreshTreeView();
 				if (TestOpener.testOpened(t)) {
 					TestOpener.postMessage({
 						command: "setTestState",
