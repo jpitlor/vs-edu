@@ -1,15 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { Test, Env } from "./extension";
-
-let extensionPath: string;
-export function InitUtils(context: vscode.ExtensionContext) {
-	extensionPath = context.extensionPath;
-}
-
-export function getExtensionPath(): string {
-	return extensionPath;
-}
+import { Test, Env, extensionPath } from "./extension";
 
 export function rootDirectory(): vscode.Uri {
 	const rootDir = vscode.workspace.workspaceFolders?.[0].uri;
@@ -54,7 +45,7 @@ export async function readWorkspaceFile(...file: string[]): Promise<string> {
 export async function readExtensionFile(...file: string[]): Promise<string> {
 	const f = await vscode.workspace.fs.readFile(
 		vscode.Uri.file(
-			path.join(extensionPath, ...file)
+			path.join(extensionPath(), ...file)
 		)
 	);
 
@@ -75,7 +66,7 @@ export function testFilePath(test: Test): vscode.Uri {
 }
 
 export function extensionFilePath(...folders: string[]): vscode.Uri {
-	return vscode.Uri.file(path.join(extensionPath, ...folders));
+	return vscode.Uri.file(path.join(extensionPath(), ...folders));
 }
 
 export function testEquals(t1: Test, t2?: Test): boolean {
