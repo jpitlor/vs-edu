@@ -72,3 +72,7 @@ export function extensionFilePath(...folders: string[]): vscode.Uri {
 export function testEquals(t1: Test, t2?: Test): boolean {
 	return t2 !== undefined && t1.levelNumber === t2.levelNumber && t1.testNumber === t2.testNumber;
 }
+
+export function getReadme(test: Test): vscode.Uri {
+	return vscode.Uri.file(path.join(test.baseFolder, "README.md"));
+}

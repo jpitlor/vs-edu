@@ -1,60 +1,44 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import * as _ from "lodash";
 import { getEnv } from "./util";
-import { Env, Test, TestState, cache } from "./extension";
-
-interface Level {
-	[levelNumber: string]: Test[];
-}
-
-interface TestFiles {
-	[levelDashTestNumber: string]: Test[];
-}
+import { Env, Test, TestState, cache, Level } from "./extension";
 
 interface Repo {
-	levels: Test[];
-	tests: Level;
-	files: TestFiles;
+	levels: Level[];
+	tests: Record<string, Test[]>;
 }
 
 function fileToTest(file: vscode.Uri): Test {
 	const [, levelNumber, levelName, testNumber, testName, filePath] =
 		/(\d+) ([^/]+)\/(\d+) ([^/]+)\/(.*)/.exec(file.path) || [];
-	return { levelName, levelNumber, testName, testNumber, filePath, state: TestState.UNKNOWN };
+	const level: Level = { name: levelName, number: levelNumber };
+	return { level, name: testName, number: testNumber, filePath, state: TestState.UNKNOWN };
 }
 
-let _repo: Repo = { levels: [], tests: {}, files: {} };
+let _repo: Repo = { levels: [], tests: {} };
 
 export async function refresh() {
-	const repo: Repo = { levels: [], tests: {}, files: {} };
 	const courseDirectory = getEnv(Env.COURSE_DIRECTORY);
-	const files = (await vscode
-		.workspace
-		.findFiles(`${courseDirectory}/**/*`))
-		.map(fileToTest);
-
-	repo.files = _.groupBy(files, f => `${f.levelNumber}-${f.testNumber}`);
-	repo.tests = _.groupBy(
-		_.uniqBy(files, "testNumber").map(t => ({ 
-			...t, 
-			filePath: undefined,
-			state: cache().get<TestState>(`${t.levelNumber}-${t.testNumber}`) || TestState.UNKNOWN,
-		})),
-		"levelNumber"
+	const files = _.groupBy(
+		await vscode.workspace.findFiles(`${courseDirectory}/**/*`),
+		f => {
+			const [, levelNumber, testNumber] = /g/.exec(f.path) || [];
+			return `${levelNumber}-${testNumber}`;
+		}
 	);
-	repo.levels = _.uniqBy(
-		files.map(f => ({ 
-			levelName: f.levelName,
-			levelNumber: f.levelNumber,
-			state: TestState.UNKNOWN,
-		})),
-		"levelNumber"
-	);
+	
+	const tests = Object.entries(files).map(([level, files]) => ({
+		level: {
+			name: 
+		}
+	}));
+	const levels = _.uniqBy(Object.values(tests).flatMap(t => t), "number");
 
-	_repo = repo;
+	_repo = {tests, levels};
 }
 
-export function getLevels(): Test[] {
+export function getLevels(): Level[] {
 	return _repo.levels;
 }
 
@@ -62,11 +46,3 @@ export function getTests(levelNumber: string): Test[] {
 	return _repo.tests[levelNumber];
 }
 
-export function getReadme(test: Test): Test | undefined {
-	return _repo.files[`${test.levelNumber}-${test.testNumber}`]
-		.find(t => t.filePath?.includes("README.md"));
-}
-
-export function getFiles(levelNumber: string, testNumber?: string): Test[] {
-	return testNumber ? _repo.files[`${levelNumber}-${testNumber}`] : [];
-}

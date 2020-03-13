@@ -9,7 +9,7 @@ let panel: vscode.WebviewPanel | undefined;
 let disposables: vscode.Disposable[] = [];
 
 export function testOpened(test: Test): boolean {
-	return _test?.testNumber === test.testNumber && _test?.levelNumber === test.levelNumber;
+	return _test?.number === test.number && _test?.level.number === test.level.number;
 }
 
 export function postMessage(message: object) {
@@ -25,18 +25,13 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 		return;
 	}
 
-	if (!test.testNumber || !test.testName) {
-		// Levels aren't valid to open
-		return;
-	}
-
 	_test = test;
 	textDocument = await vscode.workspace.openTextDocument(testFilePath(test));
 
 	await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
 	panel = _panel || panel || vscode.window.createWebviewPanel(
 		"eduTest",
-		`${test.testName} Instructions`,
+		`${test.name} Instructions`,
 		vscode.ViewColumn.Two,
 		{
 			enableScripts: true,
@@ -54,8 +49,8 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 
 	const readme = await readWorkspaceFile(
 		courseFolder,
-		`${test.levelNumber} ${test.levelName}`,
-		`${test.testNumber} ${test.testName}`,
+		`${test.level.number} ${test.level.name}`,
+		`${test.number} ${test.name}`,
 		"README.md"
 	);
 	const contentSecurityPolicy = `
@@ -65,7 +60,7 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 		style-src ${panel.webview.cspSource};
 	`;
 	
-	panel.title = `${test.testName} Instructions`;
+	panel.title = `${test.name} Instructions`;
 	panel.webview.html = /* html */ `
 		<!DOCTYPE html>
 		<html lang="en">
@@ -73,14 +68,14 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 				<meta charset="UTF-8">
 				<meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>${test.testName}</title>
+				<title>${test.name}</title>
 				<link href="${stylesUri}" rel="stylesheet" type="text/css" />
 			</head>
 			<body>
 				${marked(readme)}
 				<div class="run-button-container">
 					<button>
-						Run ${test.testName}
+						Run ${test.name}
 						&nbsp;&nbsp;
 						<svg class="fa-times">${faTimes.replace("fill=\"white\"", "fill=\"#ba000d\"")}</svg>
 						<svg class="fa-check">${faCheck.replace("fill=\"white\"", "fill=\"#087f23\"")}</svg>
@@ -117,4 +112,5 @@ function dispose() {
 
 	panel = undefined;
 	textDocument = undefined;
+	_test = undefined;
 }

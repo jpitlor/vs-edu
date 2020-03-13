@@ -10,13 +10,26 @@ export const enum TestState {
 	UNKNOWN = 0
 }
 
+export interface Level {
+	name: string;
+	number: string;
+}
+
+export interface Folder {
+	name: string;
+	files: (vscode.Uri | Folder)[];
+}
+
 export interface Test {
-	levelName: string;
-	levelNumber: string;
-	testName?: string;
-	testNumber?: string;
-	filePath?: string;
+	level: Level;
+	name: string;
+	number: string;
+	baseFolder: string;
 	state: TestState;
+
+	// Files does not include readme or vsedu.config.json, but it does
+	// include the index.
+	files: (vscode.Uri | Folder)[];
 }
 
 export enum Env {
