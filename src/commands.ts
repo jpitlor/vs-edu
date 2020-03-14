@@ -1,4 +1,3 @@
-import * as vscode from "vscode";
 import { Test } from "./extension";
 import * as TestRunner from "./test-runner";
 import { refreshTreeView } from "./test-lister";
@@ -8,9 +7,9 @@ export function openTest(test: Test) {
     TestOpener.openTest(test);
 }
 
-export function runTest(test: Test) {
+export function runTest(tests: Test[]) {
     TestOpener.postMessage({command: "setTestState", value: "in-progress"});
-    TestRunner.runTest(test);
+    TestRunner.runTest(tests);
 }
 
 export function refresh() {

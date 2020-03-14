@@ -26,7 +26,7 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 	}
 
 	_test = test;
-	textDocument = await vscode.workspace.openTextDocument(testFilePath(test));
+	textDocument = await vscode.workspace.openTextDocument(testFilePath(test, "index.js"));
 
 	await vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One);
 	panel = _panel || panel || vscode.window.createWebviewPanel(

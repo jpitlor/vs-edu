@@ -52,15 +52,15 @@ export async function readExtensionFile(...file: string[]): Promise<string> {
 	return f.toString();
 }
 
-export function testFilePath(test: Test): vscode.Uri {
+export function testFilePath(test: Test, file: string): vscode.Uri {
 	const courseFolder: string = getEnv(Env.COURSE_DIRECTORY);
 	return vscode.Uri.file(
 		path.join(
 			rootDirectory().fsPath,
 			courseFolder,
-			`${test.levelNumber} ${test.levelName}`,
-			`${test.testNumber} ${test.testName}`,
-			test.filePath || "index.js"
+			`${test.level.number} ${test.level.name}`,
+			`${test.number} ${test.name}`,
+			file
 		)
 	);
 }
@@ -70,9 +70,5 @@ export function extensionFilePath(...folders: string[]): vscode.Uri {
 }
 
 export function testEquals(t1: Test, t2?: Test): boolean {
-	return t2 !== undefined && t1.levelNumber === t2.levelNumber && t1.testNumber === t2.testNumber;
-}
-
-export function getReadme(test: Test): vscode.Uri {
-	return vscode.Uri.file(path.join(test.baseFolder, "README.md"));
+	return t2 !== undefined && t1.level.number === t2.level.number && t1.number === t2.number;
 }

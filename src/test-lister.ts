@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { Test, TestState, extensionPath } from "./extension";
+import { Test, TestState, extensionPath, Level, Folder, File } from "./extension";
 import * as TestRepository from "./test-repository";
 
 const _onDidChangeTreeData: vscode.EventEmitter<
@@ -19,7 +19,7 @@ export async function refreshTreeView() {
 	_onDidChangeTreeData.fire();
 }
 
-async function getChildren(element?: Test): Promise<Test[]> {
+async function getChildren(element?: Test | Level | Folder | File): Promise<Test[]> {
 	// If element is root, return the levels
 	if (element === null || element === undefined) {
 		return TestRepository.getLevels();
@@ -49,7 +49,7 @@ async function getChildren(element?: Test): Promise<Test[]> {
 	return tests;
 }
 
-function getTreeItem(element: Test): vscode.TreeItem {
+function getTreeItem(element: Test | Level | Folder | File): vscode.TreeItem {
 	const isLeaf =
 		element.filePath ||
 		TestRepository.getFiles(element.levelNumber, element.testNumber).length ===
@@ -74,7 +74,7 @@ function getTreeItem(element: Test): vscode.TreeItem {
 	};
 }
 
-function getParent(element: Test): Test | null {
+function getParent(element: Test): Test | Level | Folder | File | null {
 	if (element.filePath) {
 		return {
 			levelName: element.levelName,

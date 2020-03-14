@@ -10,21 +10,35 @@ export const enum TestState {
 	UNKNOWN = 0
 }
 
+export const enum Type {
+	LEVEL = 3,
+	TEST = 2,
+	FOLDER = 1,
+	FILE = 0
+}
+
 export interface Level {
+	type: Type.LEVEL;
 	name: string;
 	number: string;
 }
 
 export interface Folder {
+	type: Type.FOLDER;
 	name: string;
 	files: (vscode.Uri | Folder)[];
 }
 
+export interface File {
+	type: Type.FILE;
+	uri: vscode.Uri;
+}
+
 export interface Test {
+	type: Type.TEST;
 	level: Level;
 	name: string;
 	number: string;
-	baseFolder: string;
 	state: TestState;
 
 	// Files does not include readme or vsedu.config.json, but it does
