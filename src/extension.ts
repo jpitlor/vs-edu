@@ -26,11 +26,12 @@ export interface Level {
 export interface Folder {
 	type: Type.FOLDER;
 	name: string;
-	files: (vscode.Uri | Folder)[];
+	files: (File | Folder)[];
 }
 
 export interface File {
 	type: Type.FILE;
+	name: string;
 	uri: vscode.Uri;
 }
 
@@ -43,7 +44,7 @@ export interface Test {
 
 	// Files does not include readme or vsedu.config.json, but it does
 	// include the index.
-	files: (vscode.Uri | Folder)[];
+	files: (File | Folder)[];
 }
 
 export enum Env {

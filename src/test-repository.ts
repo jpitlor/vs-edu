@@ -13,7 +13,8 @@ let _repo: Repo = { levels: [], tests: {} };
 async function getFiles(): Promise<Record<string, Record<string, File[]>>> {
 	const courseDirectory = getEnv(Env.COURSE_DIRECTORY);
 	const workspaceFiles = await vscode.workspace.findFiles(
-		`${courseDirectory}/**/*`
+		`${courseDirectory}/**/*`,
+		`${courseDirectory}/**/{README.md,vsedu.config.json}`
 	);
 	const files: Record<string, Record<string, File[]>> = {};
 
@@ -22,7 +23,7 @@ async function getFiles(): Promise<Record<string, Record<string, File[]>>> {
 			/(\d+) ([^/]+)\/(\d+)/.exec(file.path) || [];
 
 		if (!files[levelNumber]) {
-			files[testNumber] = {};
+			files[levelNumber] = {};
 		}
 
 		if (!files[levelNumber][testNumber]) {
@@ -31,6 +32,7 @@ async function getFiles(): Promise<Record<string, Record<string, File[]>>> {
 
 		files[levelNumber][testNumber].push({
 			type: Type.FILE,
+			name: file.path.substring(file.path.lastIndexOf("/") + 1),
 			uri: file,
 		});
 	});
@@ -41,25 +43,23 @@ async function getFiles(): Promise<Record<string, Record<string, File[]>>> {
 export async function refresh() {
 	const tests: Record<string, Record<string, Test>> = _.mapValues(
 		await getFiles(),
-		level =>
-			_.mapValues(level, testFiles => {
-				const [, levelNumber, levelName, testNumber, testName] =
-					/(\d+) ([^/]+)\/(\d+) ([^/]+)/.exec(testFiles[0].uri.path) || [];
-				// const testFiles: (vscode.Uri | Folder)[] = f;
+		level => _.mapValues(level, testFiles => {
+			const [, levelNumber, levelName, testNumber, testName] =
+				/(\d+) ([^/]+)\/(\d+) ([^/]+)/.exec(testFiles[0].uri.path) || [];
 
-				return {
-					level: {
-						type: Type.LEVEL,
-						name: levelName,
-						number: levelNumber
-					},
-					name: testName,
-					number: testNumber,
-					state: TestState.UNKNOWN,
-					files: testFiles,
-					type: Type.TEST,
-				};
-			})
+			return {
+				level: {
+					type: Type.LEVEL,
+					name: levelName,
+					number: levelNumber
+				} as Level,
+				name: testName,
+				number: testNumber,
+				state: TestState.UNKNOWN,
+				files: testFiles,
+				type: Type.TEST,
+			} as Test;
+		})
 	);
 	const levels = _.uniqBy(
 		Object.values(tests).flatMap(t => Object.values(t).map(u => u.level)),

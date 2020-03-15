@@ -23,10 +23,7 @@
 			{
 				"command": "vsEdu.refresh",
 				"title": "Refresh",
-				"icon": {
-					"light": "media/light/sync.svg",
-					"dark": "media/dark/sync.svg"
-				}
+				"icon": "$(sync)"
 			},
 			{
 				"command": "vsEdu.openTest",
@@ -35,10 +32,7 @@
 			{
 				"command": "vsEdu.runTest",
 				"title": "Run Test",
-				"icon": {
-					"light": "media/light/play.svg",
-					"dark": "media/dark/play.svg"
-				}
+				"icon": "$(run)"
 			}
 		],
 		"viewsContainers": {
@@ -46,7 +40,7 @@
 				{
 					"id": "vs-edu",
 					"title": "VS Edu",
-					"icon": "media/light/graduation-cap.svg"
+					"icon": "node_modules/@fortawesome/fontawesome-pro/svgs/regular/graduation-cap.svg"
 				}
 			]
 		},
@@ -95,8 +89,7 @@
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
-		"test": "yarn run compile && yarn run lint",
-		"build-icons": "node build-icons.js"
+		"test": "yarn run compile && yarn run lint"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
