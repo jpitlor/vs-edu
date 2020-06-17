@@ -6,14 +6,6 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "node",
-			"request": "launch",
-			"name": "Build Icons",
-			"program": "${workspaceFolder}/build-icons.js",
-			"skipFiles": ["<node_internals>/**"]
-		},
-
-		{
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
