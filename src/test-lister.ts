@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import {Event, EventEmitter, TreeItem, TreeDataProvider, ThemeIcon} from "vscode";
-import * as path from "path";
-import { Test, TestState, extensionPath, Level, Folder, File, Type } from "./extension";
+import { Test, TestState, Level, Folder, File, Type } from "./extension";
 import * as TestRepository from "./test-repository";
 
 type TreeItemType = Test | Level | Folder | File;
@@ -10,15 +9,10 @@ const _onDidChangeTreeData: EventEmitter<TreeItemType | undefined> =
 	new EventEmitter<TreeItemType | undefined>();
 const onDidChangeTreeData: Event<TreeItemType | undefined> =
 	_onDidChangeTreeData.event;
-const TestStatusIcons = {
-	[TestState.UNKNOWN]: "question.svg",
-	[TestState.PASSED]: "check.svg",
-	[TestState.FAILED]: "times.svg"
-};
 
 export async function refreshTreeView() {
 	await TestRepository.refresh();
-	_onDidChangeTreeData.fire();
+	_onDidChangeTreeData.fire(undefined);
 }
 
 async function getChildren(element?: TreeItemType): Promise<TreeItemType[]> {

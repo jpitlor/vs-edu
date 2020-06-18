@@ -35,17 +35,16 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 		vscode.ViewColumn.Two,
 		{
 			enableScripts: true,
-			localResourceRoots: [
-				extensionFilePath("media", "webview"),
-				extensionFilePath("media", "dark")
-			]
+			localResourceRoots: [extensionFilePath("media")]
 		}
 	);
 
-	const scriptUri = panel.webview.asWebviewUri(extensionFilePath("media", "webview", "main.js"));
-	const stylesUri = panel.webview.asWebviewUri(extensionFilePath("media", "webview", "main.css"));
-	const faTimes = await readExtensionFile("media", "dark", "times.svg");
-	const faCheck = await readExtensionFile("media", "dark", "check.svg");
+	const scriptUri = panel.webview.asWebviewUri(extensionFilePath("media", "main.js"));
+	const stylesUri = panel.webview.asWebviewUri(extensionFilePath("media", "main.css"));
+
+	// Icons from FA Free
+	const faTimes = await readExtensionFile("media", "times-solid.svg");
+	const faCheck = await readExtensionFile("media", "check-solid.svg");
 
 	const readme = await readWorkspaceFile(
 		courseFolder,
@@ -77,8 +76,8 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 					<button>
 						Run ${test.name}
 						&nbsp;&nbsp;
-						<svg class="fa-times">${faTimes.replace("fill=\"white\"", "fill=\"#ba000d\"")}</svg>
-						<svg class="fa-check">${faCheck.replace("fill=\"white\"", "fill=\"#087f23\"")}</svg>
+						<svg class="fa-times">${faTimes}</svg>
+						<svg class="fa-check">${faCheck}</svg>
 						<div class="spinner">
 							<div class="bounce1"></div>
 							<div class="bounce2"></div>
