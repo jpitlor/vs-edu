@@ -41,6 +41,7 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 
 	const scriptUri = panel.webview.asWebviewUri(extensionFilePath("media", "main.js"));
 	const stylesUri = panel.webview.asWebviewUri(extensionFilePath("media", "main.css"));
+	const fontFolder = extensionFilePath("media").fsPath;
 
 	// Icons from FA Free
 	const faTimes = await readExtensionFile("media", "times-solid.svg");
@@ -56,7 +57,8 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 		default-src 'none'; 
 		img-src ${panel.webview.cspSource} https:;
 		script-src ${panel.webview.cspSource};
-		style-src ${panel.webview.cspSource};
+		style-src ${panel.webview.cspSource} 'unsafe-inline';
+		font-src ${panel.webview.cspSource};
 	`;
 	
 	panel.title = `${test.name} Instructions`;
@@ -68,6 +70,36 @@ export async function openTest(test: Test, _panel?: vscode.WebviewPanel) {
 				<meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>${test.name}</title>
+				<style>
+					@font-face {
+						font-family: Roboto;
+						src: url(vscode-resource:${fontFolder}/Roboto-Regular.ttf);
+					}
+					
+					@font-face {
+						font-family: Roboto;
+						src: url(vscode-resource:${fontFolder}/Roboto-Italic.ttf);
+						font-style: italic;
+					}
+					
+					@font-face {
+						font-family: Roboto;
+						src: url(vscode-resource:${fontFolder}/Roboto-Bold.ttf);
+						font-weight: 700;
+					}
+					
+					@font-face {
+						font-family: Roboto;
+						src: url(vscode-resource:${fontFolder}/Roboto-BoldItalic.ttf);
+						font-weight: 700;
+						font-style: italic;
+					}
+					
+					@font-face {
+						font-family: PatuaOne;
+						src: url(vscode-resource:${fontFolder}/PatuaOne-Regular.ttf);
+					}
+				</style>
 				<link href="${stylesUri}" rel="stylesheet" type="text/css" />
 			</head>
 			<body>
