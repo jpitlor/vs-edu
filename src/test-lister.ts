@@ -54,7 +54,10 @@ function getTreeItem(element: TreeItemType): TreeItem {
 					icon = new ThemeIcon("check");
 					break;
 				case TestState.UNKNOWN:
-					icon = new ThemeIcon("loading");
+					icon = new ThemeIcon("question");
+					break;
+				case TestState.IN_PROGRESS:
+					icon = new ThemeIcon("loading~spin");
 					break;
 			}
 			break;

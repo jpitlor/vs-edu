@@ -5,6 +5,7 @@ import { TestReopener } from "./test-reopener";
 import * as Commands from "./commands";
 
 export const enum TestState {
+	IN_PROGRESS = 3,
 	PASSED = 2,
 	FAILED = 1,
 	UNKNOWN = 0
@@ -59,8 +60,12 @@ export function extensionPath(): string {
 	return _extensionPath;
 }
 
-export function cache(): vscode.Memento {
-	return _cache;
+export function setTestState(test: Test, state: TestState) {
+	_cache.update(`${test.level.number}-${test.number}`, state);
+}
+
+export function getTestState(test: Test): TestState {
+	return _cache.get(`${test.level.number}-${test.number}`) ?? TestState.UNKNOWN;
 }
 
 export async function activate(context: vscode.ExtensionContext) {

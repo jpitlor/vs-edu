@@ -7,9 +7,9 @@ export function openTest(test: Test) {
     TestOpener.openTest(test);
 }
 
-export function runTest(tests: Test[]) {
+export function runTest(test: Test) {
     TestOpener.postMessage({command: "setTestState", value: "in-progress"});
-    TestRunner.runTest(tests);
+    TestRunner.runTest(test);
 }
 
 export function refresh() {
